@@ -60,6 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _quotes = quotes;
         });
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         Fluttertoast.showToast(
             msg: '${response.statusCode}',
             toastLength: Toast.LENGTH_SHORT,
@@ -72,7 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM);
     } finally {
-      _isLoading = false;
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 

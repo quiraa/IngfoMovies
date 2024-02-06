@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 class RandomQuotes {
-  String id;
-  String content;
-  String author;
-  List<String> tags;
-  String authorSlug;
-  int length;
-  String dateAdded;
-  String dateModified;
+  final String id;
+  final String content;
+  final String author;
+  final List<String> tags;
+  final String authorSlug;
+  final int length;
+  final String dateAdded;
+  final String dateModified;
 
   RandomQuotes({
     required this.id,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_api/presentation/pages/home_page.dart';
+import 'package:flutter_api/presentation/routes/route_handler.dart';
 
 void main() => runApp(const MyApp());
 
@@ -9,10 +11,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'IngfoMovies',
+      debugShowCheckedModeBanner: false,
+      onGenerateRoute: generateRoute,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      home: const HomePage(),
     );
   }
 }

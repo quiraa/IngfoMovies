@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class NavigationRoutes {
+class AppRouter {
   void push(BuildContext context, String routeName, {Object? arguments}) {
     Navigator.pushNamed(context, routeName, arguments: arguments);
   }

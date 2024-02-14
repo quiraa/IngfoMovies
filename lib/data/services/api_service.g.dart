@@ -13,7 +13,7 @@ class _ApiService implements ApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://www.omdbapi.com';
+    baseUrl ??= 'http://www.omdbapi.com/';
   }
 
   final Dio _dio;
@@ -40,7 +40,7 @@ class _ApiService implements ApiService {
     )
             .compose(
               _dio.options,
-              '/',
+              '',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -73,7 +73,7 @@ class _ApiService implements ApiService {
     )
             .compose(
               _dio.options,
-              '/',
+              '',
               queryParameters: queryParameters,
               data: _data,
             )

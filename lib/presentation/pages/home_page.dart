@@ -18,6 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController searchController = TextEditingController();
+  Future<SearchResult>? _searchFuture;
   SearchResult? searchResultData;
 
   @override
@@ -37,26 +38,42 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _body() {
-    return FutureBuilder<SearchResult>(
-      future: _searchMovie(searchController.text),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          // ! FIX
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+    if (_searchFuture == null) {
+      return const Center(
+        child: Text('Search for a movie'),
+      );
+    } else {
+      return FutureBuilder<SearchResult>(
+        future: _searchFuture,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text('No Result Matches'),
+                );
+              } else if (snapshot.hasData) {
+                return _movieItem(snapshot.data!);
+              } else {
+                return const Center(
+                  child: Text('No Data Retrieved'),
+                );
+              }
+            default:
+              return const SizedBox(); // Placeholder widget
+          }
+        },
+      );
+    }
   }
 
   Widget _movieItem(SearchResult result) {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 8.0,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       itemCount: result.Search.length,
       itemBuilder: (context, index) {
         SearchItem item = result.Search[index];
@@ -70,17 +87,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-// ! TRY ALTERNATIVE
-  Future<SearchResult> _searchMovie(String query) async {
-    try {
-      final api = ApiService(Dio(BaseOptions(contentType: 'application/json')));
-      final result = await api.searchMovies(Helper.apiKey, query);
-      setState(() {
-        searchResultData = result;
-      });
-    } catch (error) {
-      print('Error: ${error}');
-      throw error;
-    }
+  void _searchMovie(String query) {
+    final api = ApiService(Dio(BaseOptions(contentType: 'application/json')));
+    final future = api.searchMovies(Helper.apiKey, query);
+    setState(() {
+      _searchFuture = future;
+    });
   }
 }

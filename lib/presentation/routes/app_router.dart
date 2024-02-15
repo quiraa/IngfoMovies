@@ -10,7 +10,7 @@ class AppRouter {
     Navigator.pushReplacementNamed(context, routeName, arguments: arguments);
   }
 
-  void pushNamedAndRemoveUntil(BuildContext context, String routeName,
+  void pushAndRemoveUntil(BuildContext context, String routeName,
       {Object? arguments}) {
     Navigator.pushNamedAndRemoveUntil(
       context,

@@ -5,17 +5,17 @@ import 'package:retrofit/retrofit.dart';
 
 part 'api_service.g.dart';
 
-@RestApi(baseUrl: 'http://www.omdbapi.com/')
+@RestApi(baseUrl: 'http://www.omdbapi.com')
 abstract class ApiService {
   factory ApiService(Dio dio) = _ApiService;
 
-  @GET('')
+  @GET('/')
   Future<SearchResult> searchMovies(
     @Query('apiKey') String apiKey,
     @Query('s') String query,
   );
 
-  @GET('')
+  @GET('/')
   Future<DetailMovie> getMovieDetail(
     @Query('apiKey') String apiKey,
     @Query('i') String imdbID,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_api/data/models/search/search_item.dart';
 import 'package:flutter_api/presentation/constants/app_typography.dart';
 import 'package:flutter_api/presentation/routes/app_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MovieCardItem extends StatelessWidget {
   final SearchItem item;
@@ -19,9 +20,20 @@ class MovieCardItem extends StatelessWidget {
           children: [
             Expanded(
               flex: 2,
-              child: Image.network(
-                item.Poster,
+              child: CachedNetworkImage(
+                placeholder: (context, url) => Container(
+                  margin: const EdgeInsets.all(32),
+                  child: const CircularProgressIndicator(),
+                ),
                 width: 144,
+                height: 186,
+                errorWidget: (context, url, error) => const Icon(
+                  Icons.error,
+                  color: Colors.redAccent,
+                  size: 48.0,
+                ),
+                fit: BoxFit.cover,
+                imageUrl: item.Poster,
               ),
             ),
             const SizedBox(

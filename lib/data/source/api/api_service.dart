@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_api/data/models/detail/detail_movie.dart';
-import 'package:flutter_api/data/models/search/search_result.dart';
+import 'package:flutter_api/domain/models/detail/detail_movie.dart';
+import 'package:flutter_api/domain/models/search/search_result.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'api_service.g.dart';

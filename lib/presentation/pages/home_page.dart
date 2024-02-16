@@ -1,8 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_api/data/models/search/search_item.dart';
-import 'package:flutter_api/data/models/search/search_result.dart';
-import 'package:flutter_api/data/services/api_service.dart';
+import 'package:flutter_api/data/source/api/api_service.dart';
+import 'package:flutter_api/domain/models/search/search_item.dart';
+import 'package:flutter_api/domain/models/search/search_result.dart';
 import 'package:flutter_api/presentation/helpers/keys.dart';
 import 'package:flutter_api/presentation/routes/app_router.dart';
 import 'package:flutter_api/presentation/routes/screen_routes.dart';
@@ -34,6 +36,17 @@ class _HomePageState extends State<HomePage> {
         toolbarHeight: 86.0,
       ),
       body: _body(),
+      floatingActionButton: _fabBookmark(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _fabBookmark() {
+    return FloatingActionButton(
+      onPressed: () {
+        AppRouter().push(context, Routes.bookmark);
+      },
+      child: const Icon(Icons.bookmark),
     );
   }
 

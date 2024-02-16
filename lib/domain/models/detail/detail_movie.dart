@@ -1,4 +1,4 @@
-import 'package:flutter_api/data/models/detail/movie_rating.dart';
+import 'package:flutter_api/domain/models/detail/movie_rating.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'detail_movie.g.dart';
 

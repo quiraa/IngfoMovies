@@ -1,9 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_api/data/models/detail/detail_movie.dart';
-import 'package:flutter_api/data/services/api_service.dart';
-import 'package:flutter_api/presentation/constants/app_typography.dart';
+import 'package:flutter_api/data/source/api/api_service.dart';
+import 'package:flutter_api/domain/models/detail/detail_movie.dart';
 import 'package:flutter_api/presentation/helpers/keys.dart';
 
 class DetailPage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _DetailPageState extends State<DetailPage> {
         detailMovie = result;
       });
     } catch (error) {
-      print('Error on Detail: ${error}');
+      debugPrint('Error on Detail: $error');
     }
   }
 
@@ -48,15 +49,6 @@ class _DetailPageState extends State<DetailPage> {
                   SliverAppBar(
                     expandedHeight: 360,
                     pinned: true,
-                    actions: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.bookmark,
-                          color: Colors.amber,
-                        ),
-                      )
-                    ],
                     flexibleSpace: FlexibleSpaceBar(
                       background: CachedNetworkImage(
                         placeholder: (context, url) {
@@ -84,6 +76,17 @@ class _DetailPageState extends State<DetailPage> {
                     padding: const EdgeInsets.all(16.0), child: _buildUiInfo()),
               ),
             ),
+      floatingActionButton: _fabAddToBookmark(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _fabAddToBookmark() {
+    return FloatingActionButton(
+      onPressed: () {},
+      child: const Icon(
+        Icons.bookmark_add,
+      ),
     );
   }
 
@@ -132,37 +135,94 @@ class _DetailPageState extends State<DetailPage> {
         const SizedBox(
           height: 16.0,
         ),
-        Text.rich(
-          TextSpan(
-            children: [
-              const WidgetSpan(
-                child: Icon(
-                  Icons.calendar_today,
-                  size: 24.0,
-                ),
-                alignment: PlaceholderAlignment.middle,
-              ),
-              const WidgetSpan(
-                  child: SizedBox(
-                width: 16.0,
-              )),
-              TextSpan(
-                text: 'Released: ${detailMovie?.Released ?? ''}',
-                style: category,
-              )
-            ],
-          ),
+        _buildSingleInfo(
+          Icons.calendar_today,
+          'Released: ${detailMovie?.Released ?? ''}',
         ),
         const SizedBox(
-          height: 24.0,
+          height: 16.0,
         ),
-        Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Text.rich(TextSpan(children: [
-                const WidgetSpan(
-                  child: Icon(Icons.history, size: 24.0),
+        _buildTwoInfos(
+          Icons.history,
+          Icons.movie,
+          'Runtime: ${detailMovie?.Runtime ?? ''}',
+          'Type: ${detailMovie?.Type ?? ''}',
+        ),
+        const SizedBox(
+          height: 16.0,
+        ),
+        _buildSingleInfo(
+          Icons.theater_comedy,
+          'Genre: ${detailMovie?.Genre ?? ''}',
+        ),
+        const SizedBox(
+          height: 16.0,
+        ),
+        _buildTwoInfos(
+          Icons.record_voice_over,
+          Icons.movie_edit,
+          'Director: ${detailMovie?.Director ?? ''}',
+          'Writer: ${detailMovie?.Writer ?? ''}',
+        ),
+        const SizedBox(
+          height: 16.0,
+        ),
+        _buildSingleInfo(
+          Icons.groups,
+          'Actors: ${detailMovie?.Actors ?? ''}',
+        ),
+        const SizedBox(
+          height: 16.0,
+        ),
+        _buildTwoInfos(
+          Icons.public,
+          Icons.language,
+          'Country: ${detailMovie?.Country ?? ''}',
+          'Language: ${detailMovie?.Language ?? ''}',
+        ),
+        const SizedBox(
+          height: 16.0,
+        ),
+        _buildSingleInfo(
+          Icons.military_tech,
+          'Awards: ${detailMovie?.Awards ?? ''}',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSingleInfo(IconData? icon, String text) {
+    return Text.rich(
+      TextSpan(
+        children: [
+          WidgetSpan(
+            child: Icon(
+              icon,
+              size: 24.0,
+            ),
+            alignment: PlaceholderAlignment.middle,
+          ),
+          const WidgetSpan(child: SizedBox(width: 16.0)),
+          TextSpan(
+            text: text,
+            style: category,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTwoInfos(IconData? firstIcon, IconData? secondIcon,
+      String firstText, String secondText) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Text.rich(
+            TextSpan(
+              children: [
+                WidgetSpan(
+                  child: Icon(firstIcon, size: 24.0),
                   alignment: PlaceholderAlignment.middle,
                 ),
                 const WidgetSpan(
@@ -170,71 +230,23 @@ class _DetailPageState extends State<DetailPage> {
                   width: 16.0,
                 )),
                 TextSpan(
-                  text: 'Runtime: ${detailMovie?.Runtime ?? ''}',
+                  text: firstText,
                   style: category,
                 )
-              ])),
+              ],
             ),
-            const SizedBox(
-              width: 24.0,
-            ),
-            Expanded(
-              flex: 1,
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    const WidgetSpan(
-                      child: Icon(Icons.movie, size: 24.0),
-                      alignment: PlaceholderAlignment.middle,
-                    ),
-                    const WidgetSpan(
-                        child: SizedBox(
-                      width: 16.0,
-                    )),
-                    TextSpan(
-                      text: 'Rated: ${detailMovie?.Rated ?? ''}',
-                      style: category,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 24.0,
-        ),
-        Text.rich(
-          TextSpan(
-            children: [
-              const WidgetSpan(
-                child: Icon(
-                  Icons.theater_comedy,
-                  size: 24.0,
-                ),
-                alignment: PlaceholderAlignment.middle,
-              ),
-              const WidgetSpan(
-                  child: SizedBox(
-                width: 16.0,
-              )),
-              TextSpan(
-                text: 'Genre: ${detailMovie?.Genre ?? ''}',
-                style: category,
-              )
-            ],
           ),
         ),
         const SizedBox(
-          height: 24.0,
+          width: 24.0,
         ),
-        Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Text.rich(TextSpan(children: [
-                const WidgetSpan(
-                  child: Icon(Icons.record_voice_over, size: 24.0),
+        Expanded(
+          flex: 1,
+          child: Text.rich(
+            TextSpan(
+              children: [
+                WidgetSpan(
+                  child: Icon(secondIcon, size: 24.0),
                   alignment: PlaceholderAlignment.middle,
                 ),
                 const WidgetSpan(
@@ -242,131 +254,11 @@ class _DetailPageState extends State<DetailPage> {
                   width: 16.0,
                 )),
                 TextSpan(
-                  text: 'Director: ${detailMovie?.Director ?? ''}',
+                  text: secondText,
                   style: category,
                 )
-              ])),
+              ],
             ),
-            const SizedBox(
-              width: 24.0,
-            ),
-            Expanded(
-              flex: 1,
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    const WidgetSpan(
-                      child: Icon(Icons.movie_edit, size: 24.0),
-                      alignment: PlaceholderAlignment.middle,
-                    ),
-                    const WidgetSpan(
-                        child: SizedBox(
-                      width: 16.0,
-                    )),
-                    TextSpan(
-                      text: 'Writer: ${detailMovie?.Writer ?? ''}',
-                      style: category,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 24.0,
-        ),
-        Text.rich(
-          TextSpan(
-            children: [
-              const WidgetSpan(
-                child: Icon(
-                  Icons.groups,
-                  size: 24.0,
-                ),
-                alignment: PlaceholderAlignment.middle,
-              ),
-              const WidgetSpan(
-                  child: SizedBox(
-                width: 16.0,
-              )),
-              TextSpan(
-                text: 'Actors: ${detailMovie?.Actors ?? ''}',
-                style: category,
-              )
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 24.0,
-        ),
-        Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Text.rich(TextSpan(children: [
-                const WidgetSpan(
-                  child: Icon(Icons.public, size: 24.0),
-                  alignment: PlaceholderAlignment.middle,
-                ),
-                const WidgetSpan(
-                    child: SizedBox(
-                  width: 16.0,
-                )),
-                TextSpan(
-                  text: 'Country: ${detailMovie?.Country ?? ''}',
-                  style: category,
-                )
-              ])),
-            ),
-            const SizedBox(
-              width: 24.0,
-            ),
-            Expanded(
-              flex: 1,
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    const WidgetSpan(
-                      child: Icon(Icons.language, size: 24.0),
-                      alignment: PlaceholderAlignment.middle,
-                    ),
-                    const WidgetSpan(
-                        child: SizedBox(
-                      width: 16.0,
-                    )),
-                    TextSpan(
-                      text: 'Language: ${detailMovie?.Language ?? ''}',
-                      style: category,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 24.0,
-        ),
-        Text.rich(
-          TextSpan(
-            children: [
-              const WidgetSpan(
-                child: Icon(
-                  Icons.military_tech,
-                  size: 24.0,
-                ),
-                alignment: PlaceholderAlignment.middle,
-              ),
-              const WidgetSpan(
-                  child: SizedBox(
-                width: 16.0,
-              )),
-              TextSpan(
-                text: 'Awards: ${detailMovie?.Awards ?? ''}',
-                style: category,
-              )
-            ],
           ),
         ),
       ],

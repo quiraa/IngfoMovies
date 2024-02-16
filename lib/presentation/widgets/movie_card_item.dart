@@ -1,7 +1,8 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
-import 'package:flutter_api/data/models/search/search_item.dart';
+import 'package:flutter_api/domain/models/search/search_item.dart';
 import 'package:flutter_api/presentation/constants/app_typography.dart';
-import 'package:flutter_api/presentation/routes/app_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class MovieCardItem extends StatelessWidget {
@@ -79,25 +80,3 @@ class MovieCardItem extends StatelessWidget {
     );
   }
 }
-
-/*
-Text(
-                    widget.item.Title,
-                    style: AppTypography.movieCardTitle,
-                    overflow: TextOverflow.clip,
-                  ),
-                  const SizedBox(
-                    height: 8.0,
-                  ),
-                  Text(
-                    'Type : ${widget.item.Type}',
-                    style: AppTypography.movieCardType,
-                  ),
-                  const SizedBox(
-                    height: 8.0,
-                  ),
-                  Text(
-                    'Released : ${widget.item.Year}',
-                    style: AppTypography.movieCardYear,
-                  ),
-*/

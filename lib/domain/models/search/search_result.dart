@@ -1,4 +1,4 @@
-import 'package:flutter_api/data/models/search/search_item.dart';
+import 'package:flutter_api/domain/models/search/search_item.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'search_result.g.dart';
 

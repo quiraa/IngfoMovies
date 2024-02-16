@@ -15,37 +15,31 @@ class RepositoryImpl implements Repository {
 
   @override
   Future<void> addToBookmark(Bookmark bookmark) {
-    // TODO: implement addToBookmark
-    throw UnimplementedError();
+    return _dao.addToBookmark(bookmark);
   }
 
   @override
-  Future<void> deleteFromBookmark(Bookmark bookmark) {
-    // TODO: implement deleteFromBookmark
-    throw UnimplementedError();
+  Future<void> deleteAllBookmark() {
+    return _dao.deleteAllBookmark();
   }
 
   @override
   Future<List<Bookmark>> getAllBookmark() {
-    // TODO: implement getAllBookmark
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<Bookmark>> getAllBookmarks() {
-    // TODO: implement getAllBookmarks
-    throw UnimplementedError();
+    return _dao.getAllBookmarks();
   }
 
   @override
   Future<DetailMovie> getMovieDetail(String apiKey, String imdbID) {
-    // TODO: implement getMovieDetail
-    throw UnimplementedError();
+    return _api.getMovieDetail(apiKey, imdbID);
   }
 
   @override
   Future<SearchResult> searchMovies(String apiKey, String query) {
-    // TODO: implement searchMovies
-    throw UnimplementedError();
+    return _api.searchMovies(apiKey, query);
+  }
+
+  @override
+  Future<void> deleteBookmarkByID(String imdbID) {
+    return _dao.deleteBookmarkByID(imdbID);
   }
 }

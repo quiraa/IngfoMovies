@@ -2,20 +2,23 @@ import 'package:floor/floor.dart';
 
 @Entity(tableName: 'bookmark')
 class Bookmark {
-  @PrimaryKey(autoGenerate: true)
+  @PrimaryKey()
   @ColumnInfo(name: 'id')
-  final int id;
-
-  final String title;
-  final String released;
-  final String photoUrl;
   final String imdbID;
 
+  @ColumnInfo(name: 'title')
+  final String title;
+
+  @ColumnInfo(name: 'released')
+  final String released;
+
+  @ColumnInfo(name: 'photoUrl')
+  final String photoUrl;
+
   Bookmark(
-    this.id,
+    this.imdbID,
     this.title,
     this.photoUrl,
     this.released,
-    this.imdbID,
   );
 }

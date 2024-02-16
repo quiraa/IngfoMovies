@@ -16,16 +16,16 @@ class Repository {
     return _dao.getAllBookmarks();
   }
 
-  Future<List<Bookmark>> getAllBookmarks() async {
-    return _dao.getAllBookmarks();
+  Future<void> deleteAllBookmark() async {
+    return _dao.deleteAllBookmark();
   }
 
   Future<void> addToBookmark(Bookmark bookmark) async {
     return _dao.addToBookmark(bookmark);
   }
 
-  Future<void> deleteFromBookmark(Bookmark bookmark) async {
-    return _dao.deleteFromBookmark(bookmark);
+  Future<void> deleteBookmarkByID(String imdbID) async {
+    return _dao.deleteBookmarkByID(imdbID);
   }
 
   Future<SearchResult> searchMovies(String apiKey, String query) async {

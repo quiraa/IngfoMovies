@@ -12,6 +12,6 @@ abstract class BookmarkDao {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> addToBookmark(Bookmark bookmark);
 
-  @delete
-  Future<void> deleteFromBookmark(Bookmark bookmark);
+  @Query('DELETE FROM bookmark WHERE id = :id')
+  Future<void> deleteBookmarkByID(String id);
 }

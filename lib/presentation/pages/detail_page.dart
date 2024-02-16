@@ -4,8 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_api/data/source/api/api_service.dart';
+import 'package:flutter_api/domain/entities/bookmark.dart';
 import 'package:flutter_api/domain/models/detail/detail_movie.dart';
 import 'package:flutter_api/presentation/helpers/keys.dart';
+import 'package:flutter_api/presentation/providers/bookmark_provider.dart';
+import 'package:flutter_api/presentation/routes/app_router.dart';
+import 'package:flutter_api/presentation/widgets/bookmark_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class DetailPage extends StatefulWidget {
   final String imdbID;
@@ -16,6 +22,7 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  bool _isBookmarked = false;
   DetailMovie? detailMovie;
 
   Future<void> _fetchMovieDetail() async {
@@ -38,6 +45,7 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    BookmarkProvider _provider = Provider.of<BookmarkProvider>(context);
     return Scaffold(
       body: detailMovie == null
           ? const Center(
@@ -47,6 +55,12 @@ class _DetailPageState extends State<DetailPage> {
               headerSliverBuilder: (context, isScrolled) {
                 return [
                   SliverAppBar(
+                    leading: IconButton(
+                      onPressed: () => AppRouter().pop(context),
+                      icon: const Icon(Icons.arrow_back_ios_new,
+                          color: Colors.white),
+                    ),
+                    backgroundColor: Colors.lightBlueAccent,
                     expandedHeight: 360,
                     pinned: true,
                     flexibleSpace: FlexibleSpaceBar(
@@ -76,17 +90,37 @@ class _DetailPageState extends State<DetailPage> {
                     padding: const EdgeInsets.all(16.0), child: _buildUiInfo()),
               ),
             ),
-      floatingActionButton: _fabAddToBookmark(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
-
-  Widget _fabAddToBookmark() {
-    return FloatingActionButton(
-      onPressed: () {},
-      child: const Icon(
-        Icons.bookmark_add,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _isBookmarked = !_isBookmarked;
+          });
+          final bookmark = Bookmark(
+            detailMovie?.imdbID ?? '',
+            detailMovie?.Title ?? '',
+            detailMovie?.Poster ?? '',
+            detailMovie?.Released ?? '',
+          );
+          if (_isBookmarked == true) {
+            _provider.addToBookmark(bookmark);
+            Fluttertoast.showToast(
+                msg: 'Added to Bookmark',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM);
+          } else {
+            _provider.deleteBookmarkByID(detailMovie?.imdbID ?? '');
+            Fluttertoast.showToast(
+                msg: 'Removed from Bookmark',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM);
+          }
+        },
+        child: Icon(
+          _isBookmarked ? Icons.bookmark : Icons.bookmark_outline,
+          color: _isBookmarked ? Colors.amber : Colors.black54,
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

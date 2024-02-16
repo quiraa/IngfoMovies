@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_api/data/source/api/api_service.dart';
 import 'package:flutter_api/domain/models/search/search_item.dart';
 import 'package:flutter_api/domain/models/search/search_result.dart';
+import 'package:flutter_api/presentation/constants/app_typography.dart';
 import 'package:flutter_api/presentation/helpers/keys.dart';
 import 'package:flutter_api/presentation/routes/app_router.dart';
 import 'package:flutter_api/presentation/routes/screen_routes.dart';
@@ -27,8 +28,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
         title: SearchField(
           searchController: searchController,
           onSubmitted: _searchMovie,
@@ -53,7 +52,10 @@ class _HomePageState extends State<HomePage> {
   Widget _body() {
     if (_searchFuture == null) {
       return const Center(
-        child: Text('Search for a movie'),
+        child: Text(
+          'Search for a movie',
+          style: AppTypography.movieCardTitle,
+        ),
       );
     } else {
       return FutureBuilder<SearchResult>(
@@ -67,13 +69,19 @@ class _HomePageState extends State<HomePage> {
             case ConnectionState.done:
               if (snapshot.hasError) {
                 return const Center(
-                  child: Text('No Result Matches'),
+                  child: Text(
+                    'No Result Matches',
+                    style: AppTypography.movieCardTitle,
+                  ),
                 );
               } else if (snapshot.hasData) {
                 return _movieItem(snapshot.data!);
               } else {
                 return const Center(
-                  child: Text('No Data Retrieved'),
+                  child: Text(
+                    'No Data Retrieved',
+                    style: AppTypography.movieCardTitle,
+                  ),
                 );
               }
             default:

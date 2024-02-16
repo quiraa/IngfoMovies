@@ -85,7 +85,7 @@ class _$BookmarkDatabase extends BookmarkDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `bookmark` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `released` TEXT NOT NULL, `photoUrl` TEXT NOT NULL, `imdbID` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `bookmark` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `released` TEXT NOT NULL, `photoUrl` TEXT NOT NULL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -108,22 +108,10 @@ class _$BookmarkDao extends BookmarkDao {
             database,
             'bookmark',
             (Bookmark item) => <String, Object?>{
-                  'id': item.id,
+                  'id': item.imdbID,
                   'title': item.title,
                   'released': item.released,
-                  'photoUrl': item.photoUrl,
-                  'imdbID': item.imdbID
-                }),
-        _bookmarkDeletionAdapter = DeletionAdapter(
-            database,
-            'bookmark',
-            ['id'],
-            (Bookmark item) => <String, Object?>{
-                  'id': item.id,
-                  'title': item.title,
-                  'released': item.released,
-                  'photoUrl': item.photoUrl,
-                  'imdbID': item.imdbID
+                  'photoUrl': item.photoUrl
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -134,17 +122,14 @@ class _$BookmarkDao extends BookmarkDao {
 
   final InsertionAdapter<Bookmark> _bookmarkInsertionAdapter;
 
-  final DeletionAdapter<Bookmark> _bookmarkDeletionAdapter;
-
   @override
   Future<List<Bookmark>> getAllBookmarks() async {
     return _queryAdapter.queryList('SELECT * FROM bookmark ORDER BY title ASC',
         mapper: (Map<String, Object?> row) => Bookmark(
-            row['id'] as int,
+            row['id'] as String,
             row['title'] as String,
             row['photoUrl'] as String,
-            row['released'] as String,
-            row['imdbID'] as String));
+            row['released'] as String));
   }
 
   @override
@@ -153,13 +138,14 @@ class _$BookmarkDao extends BookmarkDao {
   }
 
   @override
-  Future<void> addToBookmark(Bookmark bookmark) async {
-    await _bookmarkInsertionAdapter.insert(
-        bookmark, OnConflictStrategy.replace);
+  Future<void> deleteBookmarkByID(String id) async {
+    await _queryAdapter
+        .queryNoReturn('DELETE FROM bookmark WHERE id = ?1', arguments: [id]);
   }
 
   @override
-  Future<void> deleteFromBookmark(Bookmark bookmark) async {
-    await _bookmarkDeletionAdapter.delete(bookmark);
+  Future<void> addToBookmark(Bookmark bookmark) async {
+    await _bookmarkInsertionAdapter.insert(
+        bookmark, OnConflictStrategy.replace);
   }
 }

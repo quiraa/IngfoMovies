@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+// ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/material.dart';
 import 'package:flutter_api/domain/entities/bookmark.dart';
 import 'package:flutter_api/presentation/constants/app_typography.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api/data/source/db/bookmark_database.dart';
+import 'package:flutter_api/data/database/bookmark_database.dart';
 import 'package:flutter_api/domain/entities/bookmark.dart';
 
 class BookmarkProvider extends ChangeNotifier {

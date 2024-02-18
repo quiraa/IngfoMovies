@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:floor/floor.dart';
-import 'package:flutter_api/data/source/db/bookmark_dao.dart';
+import 'package:flutter_api/data/database/bookmark_dao.dart';
 import 'package:flutter_api/domain/entities/bookmark.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 

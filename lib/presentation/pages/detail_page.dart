@@ -1,13 +1,15 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_api/data/source/api/api_service.dart';
+import 'package:flutter_api/data/api/api_service.dart';
 import 'package:flutter_api/domain/entities/bookmark.dart';
 import 'package:flutter_api/domain/models/detail/detail_movie.dart';
-import 'package:flutter_api/presentation/helpers/keys.dart';
+import 'package:flutter_api/presentation/constants/constants.dart';
 import 'package:flutter_api/presentation/providers/bookmark_provider.dart';
+import 'package:flutter_api/presentation/providers/internet_status_provider.dart';
 import 'package:flutter_api/presentation/routes/app_router.dart';
 import 'package:flutter_api/presentation/widgets/fab_bookmark.dart';
 import 'package:flutter_api/presentation/widgets/text_info.dart';
@@ -23,14 +25,28 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  bool _isConnected = true;
   bool _isBookmarked = false;
   late BookmarkProvider _provider;
   DetailMovie? _movie;
 
+  Future<bool> _isInternetConnected() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  Future<void> _checkInternetConnection() async {
+    bool isConnected = await _isInternetConnected();
+    setState(() {
+      _isConnected = isConnected;
+    });
+    _fetchMovieDetail();
+  }
+
   Future<void> _fetchMovieDetail() async {
     try {
       final api = ApiService(Dio(BaseOptions(contentType: 'application/json')));
-      final result = await api.getMovieDetail(Helper.apiKey, widget.imdbID);
+      final result = await api.getMovieDetail(Constants.apiKey, widget.imdbID);
       final isBookmarked = await _provider.isMovieBookmarked(widget.imdbID);
       setState(() {
         _movie = result;
@@ -71,6 +87,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
+    _checkInternetConnection();
     _fetchMovieDetail();
     _provider = Provider.of<BookmarkProvider>(context, listen: false);
   }
@@ -83,6 +100,48 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<InternetStatusProvider>(
+      builder: (context, connectionProvider, child) {
+        return connectionProvider.status == ConnectionStatus.CONNECTED
+            ? _buildUI()
+            : _buildNoInternetMessage();
+      },
+    );
+  }
+
+  Widget _buildNoInternetMessage() {
+    return Container(
+      color: Colors.white,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'No internet connection!',
+              style: TextStyle(
+                decoration: TextDecoration.none,
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'Inter',
+                fontSize: 20.0,
+              ),
+            ),
+            const SizedBox(
+              height: 16.0,
+            ),
+            FilledButton(
+              onPressed: () {
+                _checkInternetConnection();
+              },
+              child: const Text('Reconnect'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUI() {
     return Scaffold(
       body: _movie == null
           ? const Center(

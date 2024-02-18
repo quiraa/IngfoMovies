@@ -9,7 +9,8 @@ import 'package:flutter_api/domain/models/detail/detail_movie.dart';
 import 'package:flutter_api/presentation/helpers/keys.dart';
 import 'package:flutter_api/presentation/providers/bookmark_provider.dart';
 import 'package:flutter_api/presentation/routes/app_router.dart';
-import 'package:flutter_api/presentation/widgets/bookmark_button.dart';
+import 'package:flutter_api/presentation/widgets/fab_bookmark.dart';
+import 'package:flutter_api/presentation/widgets/text_info.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -23,104 +24,118 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   bool _isBookmarked = false;
-  DetailMovie? detailMovie;
+  late BookmarkProvider _provider;
+  DetailMovie? _movie;
 
   Future<void> _fetchMovieDetail() async {
     try {
       final api = ApiService(Dio(BaseOptions(contentType: 'application/json')));
       final result = await api.getMovieDetail(Helper.apiKey, widget.imdbID);
+      final isBookmarked = await _provider.isMovieBookmarked(widget.imdbID);
       setState(() {
-        detailMovie = result;
+        _movie = result;
+        _isBookmarked = isBookmarked;
       });
     } catch (error) {
       debugPrint('Error on Detail: $error');
     }
   }
 
+  void _toggleBookmark() {
+    final bookmark = Bookmark(
+      _movie?.imdbID ?? '',
+      _movie?.Title ?? '',
+      _movie?.Poster ?? '',
+      _movie?.Released ?? '',
+    );
+    if (_isBookmarked) {
+      _provider.deleteBookmarkByID(_movie?.imdbID ?? '');
+      Fluttertoast.showToast(
+        msg: 'Bookmark Deleted',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+    } else {
+      _provider.addToBookmark(bookmark);
+      Fluttertoast.showToast(
+        msg: 'Bookmark Added',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+    }
+    setState(() {
+      _isBookmarked = !_isBookmarked;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchMovieDetail();
+    _provider = Provider.of<BookmarkProvider>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _provider.getAllBookmark();
   }
 
   @override
   Widget build(BuildContext context) {
-    BookmarkProvider _provider = Provider.of<BookmarkProvider>(context);
     return Scaffold(
-      body: detailMovie == null
+      body: _movie == null
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : NestedScrollView(
-              headerSliverBuilder: (context, isScrolled) {
-                return [
-                  SliverAppBar(
-                    leading: IconButton(
-                      onPressed: () => AppRouter().pop(context),
-                      icon: const Icon(Icons.arrow_back_ios_new,
-                          color: Colors.white),
-                    ),
-                    backgroundColor: Colors.lightBlueAccent,
-                    expandedHeight: 360,
-                    pinned: true,
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: CachedNetworkImage(
-                        placeholder: (context, url) {
-                          return Container(
-                            margin: const EdgeInsets.all(32),
-                            child: const CircularProgressIndicator(),
-                          );
-                        },
-                        errorWidget: (context, url, error) {
-                          return const Icon(
-                            Icons.error,
-                            color: Colors.redAccent,
-                            size: 48,
-                          );
-                        },
-                        imageUrl: detailMovie?.Poster ?? '',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  )
-                ];
-              },
-              body: SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(16.0), child: _buildUiInfo()),
-              ),
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _isBookmarked = !_isBookmarked;
-          });
-          final bookmark = Bookmark(
-            detailMovie?.imdbID ?? '',
-            detailMovie?.Title ?? '',
-            detailMovie?.Poster ?? '',
-            detailMovie?.Released ?? '',
-          );
-          if (_isBookmarked == true) {
-            _provider.addToBookmark(bookmark);
-            Fluttertoast.showToast(
-                msg: 'Added to Bookmark',
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM);
-          } else {
-            _provider.deleteBookmarkByID(detailMovie?.imdbID ?? '');
-            Fluttertoast.showToast(
-                msg: 'Removed from Bookmark',
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM);
-          }
-        },
-        child: Icon(
-          _isBookmarked ? Icons.bookmark : Icons.bookmark_outline,
-          color: _isBookmarked ? Colors.amber : Colors.black54,
-        ),
+          : _buildAppBar(),
+      floatingActionButton: FabBookmark(
+        isBookmark: _isBookmarked,
+        onFabClick: _toggleBookmark,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _buildAppBar() {
+    return NestedScrollView(
+      headerSliverBuilder: (context, isScrolled) {
+        return [
+          SliverAppBar(
+            leading: IconButton(
+              onPressed: () => AppRouter().pop(context),
+              icon: const Icon(Icons.arrow_back),
+            ),
+            expandedHeight: 360,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: CachedNetworkImage(
+                placeholder: (context, url) {
+                  return Container(
+                    margin: const EdgeInsets.all(32),
+                    child: const CircularProgressIndicator(),
+                  );
+                },
+                errorWidget: (context, url, error) {
+                  return const Icon(
+                    Icons.error,
+                    color: Colors.redAccent,
+                    size: 48,
+                  );
+                },
+                imageUrl: _movie?.Poster ?? '',
+                fit: BoxFit.cover,
+              ),
+            ),
+          )
+        ];
+      },
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: _buildUiInfo(),
+        ),
+      ),
     );
   }
 
@@ -129,7 +144,7 @@ class _DetailPageState extends State<DetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          detailMovie?.Title ?? '',
+          _movie?.Title ?? '',
           style: const TextStyle(
             fontSize: 24.0,
             fontWeight: FontWeight.w700,
@@ -143,15 +158,15 @@ class _DetailPageState extends State<DetailPage> {
             Expanded(
               flex: 1,
               child: Text(
-                'Type: ${detailMovie?.Type ?? ''}',
-                style: category,
+                'Type: ${_movie?.Type ?? ''}',
+                style: TextInfo().category,
               ),
             ),
             Expanded(
               flex: 1,
               child: Text(
-                'Total Season: ${detailMovie?.totalSeasons ?? ''}',
-                style: category,
+                'Total Season: ${_movie?.totalSeasons ?? ''}',
+                style: TextInfo().category,
               ),
             ),
           ],
@@ -160,7 +175,7 @@ class _DetailPageState extends State<DetailPage> {
           height: 16.0,
         ),
         Text(
-          detailMovie?.Plot ?? '',
+          _movie?.Plot ?? '',
           style: const TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w400,
@@ -169,138 +184,59 @@ class _DetailPageState extends State<DetailPage> {
         const SizedBox(
           height: 16.0,
         ),
-        _buildSingleInfo(
+        TextInfo().buildSingleInfo(
           Icons.calendar_today,
-          'Released: ${detailMovie?.Released ?? ''}',
+          'Released: ${_movie?.Released ?? ''}',
         ),
         const SizedBox(
           height: 16.0,
         ),
-        _buildTwoInfos(
+        TextInfo().buildTwoInfos(
           Icons.history,
           Icons.movie,
-          'Runtime: ${detailMovie?.Runtime ?? ''}',
-          'Type: ${detailMovie?.Type ?? ''}',
+          'Runtime: ${_movie?.Runtime ?? ''}',
+          'Type: ${_movie?.Type ?? ''}',
         ),
         const SizedBox(
           height: 16.0,
         ),
-        _buildSingleInfo(
+        TextInfo().buildSingleInfo(
           Icons.theater_comedy,
-          'Genre: ${detailMovie?.Genre ?? ''}',
+          'Genre: ${_movie?.Genre ?? ''}',
         ),
         const SizedBox(
           height: 16.0,
         ),
-        _buildTwoInfos(
+        TextInfo().buildTwoInfos(
           Icons.record_voice_over,
           Icons.movie_edit,
-          'Director: ${detailMovie?.Director ?? ''}',
-          'Writer: ${detailMovie?.Writer ?? ''}',
+          'Director: ${_movie?.Director ?? ''}',
+          'Writer: ${_movie?.Writer ?? ''}',
         ),
         const SizedBox(
           height: 16.0,
         ),
-        _buildSingleInfo(
+        TextInfo().buildSingleInfo(
           Icons.groups,
-          'Actors: ${detailMovie?.Actors ?? ''}',
+          'Actors: ${_movie?.Actors ?? ''}',
         ),
         const SizedBox(
           height: 16.0,
         ),
-        _buildTwoInfos(
+        TextInfo().buildTwoInfos(
           Icons.public,
           Icons.language,
-          'Country: ${detailMovie?.Country ?? ''}',
-          'Language: ${detailMovie?.Language ?? ''}',
+          'Country: ${_movie?.Country ?? ''}',
+          'Language: ${_movie?.Language ?? ''}',
         ),
         const SizedBox(
           height: 16.0,
         ),
-        _buildSingleInfo(
+        TextInfo().buildSingleInfo(
           Icons.military_tech,
-          'Awards: ${detailMovie?.Awards ?? ''}',
+          'Awards: ${_movie?.Awards ?? ''}',
         ),
       ],
     );
   }
-
-  Widget _buildSingleInfo(IconData? icon, String text) {
-    return Text.rich(
-      TextSpan(
-        children: [
-          WidgetSpan(
-            child: Icon(
-              icon,
-              size: 24.0,
-            ),
-            alignment: PlaceholderAlignment.middle,
-          ),
-          const WidgetSpan(child: SizedBox(width: 16.0)),
-          TextSpan(
-            text: text,
-            style: category,
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTwoInfos(IconData? firstIcon, IconData? secondIcon,
-      String firstText, String secondText) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Text.rich(
-            TextSpan(
-              children: [
-                WidgetSpan(
-                  child: Icon(firstIcon, size: 24.0),
-                  alignment: PlaceholderAlignment.middle,
-                ),
-                const WidgetSpan(
-                    child: SizedBox(
-                  width: 16.0,
-                )),
-                TextSpan(
-                  text: firstText,
-                  style: category,
-                )
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(
-          width: 24.0,
-        ),
-        Expanded(
-          flex: 1,
-          child: Text.rich(
-            TextSpan(
-              children: [
-                WidgetSpan(
-                  child: Icon(secondIcon, size: 24.0),
-                  alignment: PlaceholderAlignment.middle,
-                ),
-                const WidgetSpan(
-                    child: SizedBox(
-                  width: 16.0,
-                )),
-                TextSpan(
-                  text: secondText,
-                  style: category,
-                )
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  var category = const TextStyle(
-    fontSize: 16.0,
-    fontWeight: FontWeight.w600,
-  );
 }

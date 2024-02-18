@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: SearchField(
           searchController: searchController,
           onSubmitted: _searchMovie,
@@ -41,11 +42,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _fabBookmark() {
-    return FloatingActionButton(
+    return FloatingActionButton.extended(
+      icon: const Icon(Icons.bookmark),
+      label: const Text(
+        'Bookmarks',
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       onPressed: () {
         AppRouter().push(context, Routes.bookmark);
       },
-      child: const Icon(Icons.bookmark),
     );
   }
 

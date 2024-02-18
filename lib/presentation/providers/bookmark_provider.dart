@@ -17,10 +17,11 @@ class BookmarkProvider extends ChangeNotifier {
     final allBookmark = await db.dao.getAllBookmarks();
     if (allBookmark.isNotEmpty) {
       _bookmarks = allBookmark;
+      notifyListeners();
     } else {
       _bookmarks = [];
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   Future<void> addToBookmark(Bookmark bookmark) async {
@@ -43,39 +44,12 @@ class BookmarkProvider extends ChangeNotifier {
     _bookmarks.clear();
     notifyListeners();
   }
+
+  Future<bool> isMovieBookmarked(String imdbID) async {
+    final db = await _createDatabase();
+    final allBookmark = await db.dao.getAllBookmarks();
+    final isBookmarked =
+        allBookmark.any((bookmark) => bookmark.imdbID == imdbID);
+    return isBookmarked;
+  }
 }
-
-// class BookmarkProvider extends ChangeNotifier {
-//   final BookmarkDatabase _database;
-
-//   BookmarkProvider(this._database);
-
-//   List<Bookmark> _bookmarks = [];
-//   List<Bookmark> get bookmarks => _bookmarks;
-
-//   Future<void> getAllBookmark() async {
-//     final allBookmark = await _database.dao.getAllBookmarks();
-//     if (allBookmark.isNotEmpty) {
-//       _bookmarks = allBookmark;
-//     } else {
-//       _bookmarks = [];
-//     }
-//     notifyListeners();
-//   }
-
-//   Future<void> addToBookmark(Bookmark bookmark) async {
-//     await _database.dao.addToBookmark(bookmark);
-//     notifyListeners();
-//   }
-
-//   Future<void> deleteBookmarkByID(String imdbID) async {
-//     await _database.dao.deleteBookmarkByID(imdbID);
-//     notifyListeners();
-//   }
-
-//   Future<void> deleteAllBookmark() async {
-//     await _database.dao.deleteAllBookmark();
-//     _bookmarks.clear();
-//     notifyListeners();
-//   }
-// }

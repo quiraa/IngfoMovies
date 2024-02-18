@@ -1,4 +1,4 @@
-import 'package:flutter_api/data/repositories/repository.dart';
+import 'package:flutter_api/data/repository/repository.dart';
 import 'package:flutter_api/data/source/api/api_service.dart';
 import 'package:flutter_api/data/source/db/bookmark_dao.dart';
 import 'package:flutter_api/domain/entities/bookmark.dart';

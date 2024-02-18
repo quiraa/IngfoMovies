@@ -19,15 +19,14 @@ class _SearchFieldState extends State<SearchField> {
     return TextField(
       controller: widget.searchController,
       decoration: InputDecoration(
-        hintText: 'Search Movies',
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(32.0),
-          ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(36.0),
         ),
+        hintText: 'Search Movies',
         prefixIcon: IconButton(
-          onPressed: () =>
-              widget.onSubmitted(widget.searchController.text.toString()),
+          onPressed: () => widget.onSubmitted(
+            widget.searchController.text.toString(),
+          ),
           icon: const Icon(Icons.search),
         ),
         suffixIcon: widget.searchController.text.isNotEmpty
@@ -41,8 +40,9 @@ class _SearchFieldState extends State<SearchField> {
               )
             : null,
       ),
-      onSubmitted: (String submitted) =>
-          widget.onSubmitted(widget.searchController.text.toString()),
+      onSubmitted: (String submitted) => widget.onSubmitted(
+        widget.searchController.text.toString(),
+      ),
     );
   }
 }

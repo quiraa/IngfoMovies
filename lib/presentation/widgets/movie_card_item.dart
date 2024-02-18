@@ -14,6 +14,14 @@ class MovieCardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: Colors.grey.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onMovieClick,
@@ -27,7 +35,7 @@ class MovieCardItem extends StatelessWidget {
                   child: const CircularProgressIndicator(),
                 ),
                 width: 144,
-                height: 186,
+                height: 164,
                 errorWidget: (context, url, error) => const Icon(
                   Icons.error,
                   color: Colors.redAccent,

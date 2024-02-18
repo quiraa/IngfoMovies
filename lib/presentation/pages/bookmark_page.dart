@@ -5,6 +5,7 @@ import 'package:flutter_api/presentation/constants/app_typography.dart';
 import 'package:flutter_api/presentation/providers/bookmark_provider.dart';
 import 'package:flutter_api/presentation/routes/app_router.dart';
 import 'package:flutter_api/presentation/routes/screen_routes.dart';
+import 'package:flutter_api/presentation/widgets/bookmark_card_item.dart';
 import 'package:provider/provider.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bookmark'),
+        title: const Text('My Bookmarks'),
         actions: [
           IconButton(
             onPressed: () {
@@ -58,70 +59,19 @@ class _BookmarkPageState extends State<BookmarkPage> {
                   itemCount: provider.bookmarks.length,
                   itemBuilder: (context, index) {
                     Bookmark bookmark = provider.bookmarks[index];
-                    return _bookmarkCardItem(bookmark);
+                    return BookmarkCardItem(
+                      item: bookmark,
+                      onBookmarkClick: () {
+                        return AppRouter().push(
+                          context,
+                          Routes.detail,
+                          arguments: bookmark.imdbID,
+                        );
+                      },
+                    );
                   },
                 );
         },
-      ),
-    );
-  }
-
-  Widget _bookmarkCardItem(Bookmark item) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () =>
-            AppRouter().push(context, Routes.detail, arguments: item.imdbID),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: CachedNetworkImage(
-                placeholder: (context, url) => Container(
-                  margin: const EdgeInsets.all(32),
-                  child: const CircularProgressIndicator(),
-                ),
-                width: 144,
-                height: 186,
-                errorWidget: (context, url, error) => const Icon(
-                  Icons.error,
-                  color: Colors.redAccent,
-                  size: 48.0,
-                ),
-                fit: BoxFit.cover,
-                imageUrl: item.photoUrl,
-              ),
-            ),
-            const SizedBox(
-              width: 8.0,
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: AppTypography.movieCardTitle,
-                        overflow: TextOverflow.clip,
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      Text(
-                        'Released : ${item.released}',
-                        style: AppTypography.movieCardType,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

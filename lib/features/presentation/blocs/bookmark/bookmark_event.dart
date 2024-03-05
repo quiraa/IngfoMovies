@@ -26,7 +26,3 @@ class RemoveMovieFromBookmarkEvent extends BookmarkEvent {
 class CheckBookmarkEvent extends BookmarkEvent {
   const CheckBookmarkEvent(String imdbID) : super(imdbID: imdbID);
 }
-
-class CheckAllBookmarksEvent extends BookmarkEvent {
-  const CheckAllBookmarksEvent();
-}

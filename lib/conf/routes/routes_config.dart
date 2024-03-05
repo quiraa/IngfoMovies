@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ingfo_movies/conf/routes/screen_routes.dart';
-import 'package:ingfo_movies/features/presentation/pages/bookmark_page.dart';
 import 'package:ingfo_movies/features/presentation/pages/detail_page.dart';
 import 'package:ingfo_movies/features/presentation/pages/home_page.dart';
 
@@ -17,7 +16,7 @@ class RoutesConfig {
       case ScreenRoutes.home:
         return getPageRoute(
           routeName: ScreenRoutes.home,
-          screen: HomePage(),
+          screen: const HomePage(),
         );
 
       case ScreenRoutes.movie:
@@ -27,12 +26,6 @@ class RoutesConfig {
           screen: DetailPage(
             imdbID: imdbID,
           ),
-        );
-
-      case ScreenRoutes.bookmark:
-        return getPageRoute(
-          routeName: ScreenRoutes.bookmark,
-          screen: const BookmarkPage(),
         );
 
       default:

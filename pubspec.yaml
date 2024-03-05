@@ -52,6 +52,9 @@ dependencies:
   # * Simple Object Comparison
   equatable: ^2.0.5
 
+  # * Icons
+  ionicons: ^0.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

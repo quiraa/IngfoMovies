@@ -166,11 +166,6 @@ class _DetailContentState extends State<DetailContent> {
           BlocProvider.of<BookmarkBloc>(context).add(
             RemoveMovieFromBookmarkEvent(widget.movie.imdbID ?? ''),
           );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Bookmark Deleted'),
-            ),
-          );
         },
       );
     } else if (state is BookmarkNotBookmarkedState) {
@@ -185,11 +180,6 @@ class _DetailContentState extends State<DetailContent> {
           );
           BlocProvider.of<BookmarkBloc>(context).add(
             AddMovieToBookmarkEvent(bookmark),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Bookmark Added'),
-            ),
           );
         },
       );
@@ -207,49 +197,6 @@ class _DetailContentState extends State<DetailContent> {
       );
     }
   }
-
-  // Widget _buildBookmarkFab(BookmarkState state) {
-  //   print(state.runtimeType);
-  //   if (state is BookmarkSuccessState) {
-  //     if (state.bookmarks!.contains(widget.movie.imdbID)) {
-  //       return BookmarkButton(
-  //         isBookmark: true,
-  //         onFabClick: () {
-  //           BlocProvider.of<BookmarkBloc>(context).add(
-  //             RemoveMovieFromBookmarkEvent(widget.movie.imdbID ?? ''),
-  //           );
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             const SnackBar(
-  //               content: Text('Bookmark Deleted'),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     } else {
-  //       return BookmarkButton(
-  //         isBookmark: false,
-  //         onFabClick: () {
-  //           final bookmark = BookmarkEntity(
-  //             widget.movie.imdbID ?? '',
-  //             widget.movie.Title ?? '',
-  //             widget.movie.Poster ?? '',
-  //             widget.movie.Released ?? '',
-  //           );
-  //           BlocProvider.of<BookmarkBloc>(context).add(
-  //             AddMovieToBookmarkEvent(bookmark),
-  //           );
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             const SnackBar(
-  //               content: Text('Bookmark Added'),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     }
-  //   } else {
-  //     return const SizedBox(); // Jangan menampilkan tombol bookmark selama masih loading
-  //   }
-  // }
 
   Widget _buildDetailInformation() {
     return Card(

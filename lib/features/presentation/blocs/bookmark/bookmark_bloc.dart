@@ -23,7 +23,6 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
     on<RemoveMovieFromBookmarkEvent>(onRemoveBookmark);
     on<CheckBookmarkEvent>(onCheckBookmark);
     on<DeleteAllBookmarkEvent>(onDeleteAllBookmark);
-    on<CheckAllBookmarksEvent>(onCheckAllBookmarks);
   }
 
   void onGetAllBookmark(
@@ -44,6 +43,7 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
     emit(const BookmarkLoadingState());
     emit(BookmarkSuccessState(currentBookmarks));
     add(CheckBookmarkEvent(event.imdbID!));
+    add(const GetAllBookmarkEvent());
   }
 
   void onAddBookmark(
@@ -75,18 +75,7 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
     Emitter<BookmarkState> emit,
   ) async {
     await deleteAllBookmarkUseCase();
-    add(const CheckAllBookmarksEvent()); // Mengecek status semua bookmark
-  }
-
-  void onCheckAllBookmarks(
-    CheckAllBookmarksEvent event,
-    Emitter<BookmarkState> emit,
-  ) async {
-    final allBookmarks = await getAllBookmarkUseCase();
-    if (allBookmarks.isNotEmpty) {
-      emit(BookmarkSuccessState(allBookmarks));
-    } else {
-      emit(const BookmarkEmptyState()); // Menampilkan bahwa tidak ada bookmark
-    }
+    final currentBookmark = await getAllBookmarkUseCase();
+    emit(BookmarkSuccessState(currentBookmark));
   }
 }
